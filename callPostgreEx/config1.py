@@ -1,9 +1,12 @@
 from decouple import config
 import psycopg2 as pg
+import pyodbc as pyo
 
 secretKey = config("SECRET_KEY")
 unamePostgre = config("PostgreUser")
 passwPostgre = config("PostgrePass")
+unameSQL = config("SQLUser")
+passwSQL = config("SQLPass")
 
 connPostgre = {
     'hostname' : '192.168.0.30',
@@ -11,6 +14,14 @@ connPostgre = {
     'username' : unamePostgre,
     'pwd' : passwPostgre,
     'port_id' : 5432
+    }
+
+connSQL = {
+    'server' : '192.168.0.30', 
+    'dbu' : 'NBAGame', 
+    'uname' : unameSQL, 
+    'passw' : passwSQL,
+    'port' : 49172
     }
 
 
@@ -29,8 +40,12 @@ class ConfigPostgreSQL(ConfigBase):
     
 class ConfigPostgreSQLAlchemy(ConfigBase):    
     par = 'postgresql://' + connPostgre['username'] + ':' + connPostgre['pwd'] + '@' + connPostgre['hostname'] + ':' + str(connPostgre['port_id']) + '/' + connPostgre['database']        
+    
+class ConfigSQLAlchemy(ConfigBase):
+    par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+17+for+SQL+Server"
 
 config = {    
     'PostgreSQL': ConfigPostgreSQL.conn,
-    'PostgreSQLalchemy' : ConfigPostgreSQLAlchemy.par
+    'PostgreSQLalchemy' : ConfigPostgreSQLAlchemy.par,
+    'SQLAlchemy' : ConfigSQLAlchemy.par
 }

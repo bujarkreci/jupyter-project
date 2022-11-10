@@ -1,6 +1,22 @@
 from sqlalchemy import create_engine
-from app import cfi1
+from app import cfi1, cfi2
 
+def connectSQL():
+    """ Connect to the SQL database server """
+
+    try:
+        # read connection params
+        con = cfi2        
+
+        # connect to PostgreSQL server
+        print('Connecting SQL...')
+        engine = create_engine(con)       
+        
+        connection = engine.connect()
+
+        return connection
+    except:
+        return print("Connection failed.")
 
 def connect():
     """ Connect to the PostgreSQL database server """
@@ -42,7 +58,9 @@ def connectWrite():
 # for debug
 if __name__ == '__main__':
     connection = connect()
+    connectionSQL = connectSQL()
     result = connection.execute("select version();")
     for row in result:
         print(row)
     connection.close()
+    connectionSQL.close()
