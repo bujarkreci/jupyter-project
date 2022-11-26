@@ -5,3 +5,4 @@ import config1 as cf
 cfi = cf.config['PostgreSQL']
 cfi1 = cf.config['PostgreSQLalchemy']
 cfi2 = cf.config['SQLAlchemy']
+cfi3 = cf.config['SQLDirect']

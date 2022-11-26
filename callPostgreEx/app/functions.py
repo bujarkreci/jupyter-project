@@ -45,7 +45,37 @@ class Teams:
         except:
             return print("Error occured with the link.")
     
+    def getTeamsDetailsSoup(self):
+        try:
+            data = []            
+            page = requests.get(self.link)
+            soup = BeautifulSoup(page.text, parser='lxml')
+            table = soup.find( "table", {"class":"plainrowheaders"} )
+            if table.empty:
+                raise Exception("There is an empty dataset")
+                
+            table_body = table.find('tbody')
+            
+            rows = table_body.find_all('tr')
+            for row in rows:
+                cols = row.find_all(['td','th'])
+                cols = [ele.text.strip() for ele in cols]
+                data.append([ele for ele in cols if ele]) # Get rid of empty values    
+              
+            
+            tab1 = pd.DataFrame(data)
+            tab1 = tab1.dropna()
+            tab1.columns = tab1.iloc[0]
+            tab1 = tab1[1:]
+            dtypescols = {"No.":"int","Caps":"int","Goals":"int"}
+            tab1 = tab1.astype(dtypescols)
+            tab1.index = np.arange(1, len(tab1) + 1)
+            tab1.index.name = "playerid"
+            tab1["teamid"] = self.teamid    
 
+            return tab1
+        except Exception as inst:
+            return print(inst)
     
     def getTeamsDetails(self,mtch):
         try:

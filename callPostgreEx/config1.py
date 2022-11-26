@@ -18,6 +18,7 @@ connPostgre = {
 
 connSQL = {
     'server' : '192.168.0.30', 
+    'serverwithport' : '192.168.0.30,49172',
     'dbu' : 'NBAGame', 
     'uname' : unameSQL, 
     'passw' : passwSQL,
@@ -43,9 +44,18 @@ class ConfigPostgreSQLAlchemy(ConfigBase):
     
 class ConfigSQLAlchemy(ConfigBase):
     par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+17+for+SQL+Server"
+    
+#This ConfigSQLDirect is not working need further to investigate
+class ConfigSQLDirect(ConfigBase):
+    cnxn = ("Driver={SQL Server Native Client 11.0};"
+            f"Server={connSQL['serverwithport']};"
+            f"Database={connSQL['dbu']};"
+            f"UID={connSQL['uname']};"
+            f"PWD={connSQL['passw']};")
 
 config = {    
     'PostgreSQL': ConfigPostgreSQL.conn,
     'PostgreSQLalchemy' : ConfigPostgreSQLAlchemy.par,
-    'SQLAlchemy' : ConfigSQLAlchemy.par
+    'SQLAlchemy' : ConfigSQLAlchemy.par,
+    'SQLDirect' : ConfigSQLDirect.cnxn
 }

@@ -54,6 +54,26 @@ def connectWrite():
         return connection
     except:
         return print("Connection failed.")
+    
+def connectWriteSQL():
+    """ Connect to the SQL database server """
+
+    try:
+        # read connection params
+        con = cfi2        
+
+        # connect to PostgreSQL server
+        print('Connecting SQL...')
+        engine = create_engine(con)     
+        
+        
+        autocommit_engine = engine.execution_options(isolation_level="AUTOCOMMIT")
+
+        connection = autocommit_engine.connect()
+
+        return connection
+    except:
+        return print("Connection failed.")
 
 # for debug
 if __name__ == '__main__':
