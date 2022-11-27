@@ -1,0 +1,7 @@
+https://www.countries-ofthe-world.com/flags-of-the-world.html
+
+
+mapping
+https://stackoverflow.com/questions/6375942/how-do-you-base-64-encode-a-png-image-for-use-in-a-data-uri-in-a-css-file
+https://www.kaggle.com/code/stassl/displaying-inline-images-in-pandas-dataframe
+https://towardsdatascience.com/rendering-images-inside-a-pandas-dataframe-3631a4883f60

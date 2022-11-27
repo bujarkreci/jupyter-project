@@ -19,7 +19,7 @@ connPostgre = {
 connSQL = {
     'server' : '192.168.0.30', 
     'serverwithport' : '192.168.0.30,49172',
-    'dbu' : 'NBAGame', 
+    'dbu' : 'FootballDetails', 
     'uname' : unameSQL, 
     'passw' : passwSQL,
     'port' : 49172
