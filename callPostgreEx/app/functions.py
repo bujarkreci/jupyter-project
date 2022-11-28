@@ -15,6 +15,62 @@ def extractDataset(docpath):
         return tab2
     except:
         return print("Error occured with the dataset.")
+    
+def path_to_image_html(path):
+    return '<img src="'+ path + '" width="60" >'
+    
+def getAllCountriesFlags(url, countriesdictmap, show='all'):
+    
+    try:
+    
+        data = []        
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, parser='lxml', features="lxml")
+        table = soup.find_all( "table", {"class":"two-column td-image"} )
+
+        for tabi in table: 
+            table_body = tabi.find('tbody')
+
+            rows = table_body.find_all('tr')
+            for row in rows:
+                cols = row.find_all('td') 
+
+                t = row.find_all('img')
+                cols1 = [ele.get('src') for ele in t] 
+                cols = [ele.text.strip() for ele in cols]
+                datas1 = [ele for ele in cols]
+                datas2 = [ele for ele in cols1]
+                res = [*datas1, *datas2]
+                data.append(res) # Get rid of empty values   
+
+        tab1 = pd.DataFrame(data)
+        tab1.columns = tab1.iloc[0]
+        tab1 = tab1[1:]
+        tab1 = tab1.dropna()
+        ColumnNames = {"A":"Country",None:"FlagPath"}            
+        tab1 = tab1.rename(columns=ColumnNames)        
+        tab1['FlagPathWeb'] = tab1['FlagPath'].apply(lambda x: "{}{}".format('https://www.countries-ofthe-world.com/', x))
+        tab1['CountryLower'] = tab1['Country'].str.lower()
+        #tab1['countryid'] = tab1['CountryLower'].map(natTeams.set_index('NationalTeamNameLower')['NationalTeamId'])
+        tab1['countryid'] = tab1['CountryLower'].map(countriesdictmap)
+        tab1['countryid'] = tab1['countryid'].fillna(0)
+        tab1['countryid'] = tab1['countryid'].astype(int)
+        tab1 = tab1.set_index('countryid')
+        
+        if show == 'web':
+            showcols = ["FlagPathWeb"]
+            
+        elif show == 'local':
+            showcols = ["FlagPath"]
+            
+        else:
+            showcols = ["Country","FlagPath","FlagPathWeb"]
+        
+        tab1 = tab1[showcols]
+
+        return tab1
+    except:
+        return print("Error occured with the dataset.")
 
 class Teams:    
     
@@ -67,7 +123,8 @@ class Teams:
         except:
             return print("Error occured with the link.")
     
-    def getTeamsDetailsSoup(self):
+    #dictionarymap parameter has to be in format {countryLowercase : id}
+    def getTeamsDetailsSoup(self, dictionarymap):
         try:
             data = []   
             page = requests.get(self.link)
@@ -105,10 +162,33 @@ class Teams:
             tab1.index = np.arange(1, len(tab1) + 1)
             tab1.index.name = "playerid"
             tab1["teamid"] = self.teamid    
+            tab1['countryLower'] = tab1['Country'].str.lower()
+            tab1['countryid'] = tab1['countryLower'].map(dictionarymap)
+            
 
             return tab1
         except Exception as inst:
             return print(inst)
+        
+    def getCompleteTeamDetails(self, dictionarymap, joinflags, show='all'):
+        try:
+            getteamset = self.getTeamsDetailsSoup(dictionarymap)
+            getteamset = getteamset.set_index("countryid")
+            Showall = getteamset.merge(joinflags, on='countryid', how='left')
+            Showall = Showall.set_index("Number")
+            
+            if show == 'web':
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb"]
+            elif show == 'local':
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath"]
+            else:    
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","FlagPathWeb"]
+            
+            Showall = Showall[cols]
+
+            return Showall
+        except:
+            return print("Error occured with this dataset.")
         
     def getTeamsHead(self):
         """ Get teams """
