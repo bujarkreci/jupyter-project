@@ -50,6 +50,7 @@ def getAllCountriesFlags(url, countriesdictmap, show='all'):
         ColumnNames = {"A":"Country",None:"FlagPath"}            
         tab1 = tab1.rename(columns=ColumnNames)        
         tab1['FlagPathWeb'] = tab1['FlagPath'].apply(lambda x: "{}{}".format('https://www.countries-ofthe-world.com/', x))
+        tab1['Country'] = tab1['Country'].str.replace('\W', '', regex=True)        
         tab1['CountryLower'] = tab1['Country'].str.lower()
         #tab1['countryid'] = tab1['CountryLower'].map(natTeams.set_index('NationalTeamNameLower')['NationalTeamId'])
         tab1['countryid'] = tab1['CountryLower'].map(countriesdictmap)
