@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
+from PIL import Image
+from io import BytesIO
+import base64
 
 def extractDataset(docpath):
     try:
@@ -16,8 +19,25 @@ def extractDataset(docpath):
     except:
         return print("Error occured with the dataset.")
     
-def path_to_image_html(path):
-    return '<img src="'+ path + '" width="60" >'
+def path_to_image_html(path): 
+    source = '<img src="'+ path + '" width="50" >'
+    return source
+
+
+def get_thumbnail(path):
+    i = Image.open(path)
+    i.thumbnail((40, 40), Image.LANCZOS)
+    return i
+
+def image_base64(im):
+    if isinstance(im, str):
+        im = get_thumbnail(im)
+    with BytesIO() as buffer:
+        im.save(buffer, 'png')
+        return base64.b64encode(buffer.getvalue()).decode()
+
+def image_formatter(im):
+    return f'<img src="data:image/png;base64,{image_base64(im)}">'
     
 def getAllCountriesFlags(url, countriesdictmap, show='all'):
     
@@ -162,10 +182,11 @@ class Teams:
             tab1 = tab1.astype(dtypescols)
             tab1.index = np.arange(1, len(tab1) + 1)
             tab1.index.name = "playerid"
-            tab1["teamid"] = self.teamid    
-            tab1['countryLower'] = tab1['Country'].str.lower()
+            tab1["teamid"] = self.teamid  
+            tab1["countryLower"] = tab1['Country'].str.replace('\W', '', regex=True)
+            tab1['countryLower'] = tab1['countryLower'].str.lower()
             tab1['countryid'] = tab1['countryLower'].map(dictionarymap)
-            
+            tab1['countryid'].astype('int')
 
             return tab1
         except Exception as inst:
@@ -176,14 +197,15 @@ class Teams:
             getteamset = self.getTeamsDetailsSoup(dictionarymap)
             getteamset = getteamset.set_index("countryid")
             Showall = getteamset.merge(joinflags, on='countryid', how='left')
-            Showall = Showall.set_index("Number")
+            Showall = Showall.set_index("Number")           
+            
             
             if show == 'web':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb","image"]
             elif show == 'local':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","image"]
             else:    
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","FlagPathWeb"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","FlagPathWeb","image"]
             
             Showall = Showall[cols]
 
