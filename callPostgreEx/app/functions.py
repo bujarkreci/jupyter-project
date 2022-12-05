@@ -108,7 +108,7 @@ class Teams:
     
     def __iter__(self):
         yield from {
-            "team id:": self.teamid,
+            "team id": self.teamid,
             "team name": self.teamname,
             "team head": self.getTeamsHeadSoup()
         }.items()  
