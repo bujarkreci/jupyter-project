@@ -185,8 +185,11 @@ class Teams:
             tab1["teamid"] = self.teamid  
             tab1["countryLower"] = tab1['Country'].str.replace('\W', '', regex=True)
             tab1['countryLower'] = tab1['countryLower'].str.lower()
-            tab1['countryid'] = tab1['countryLower'].map(dictionarymap)
+            tab1['countryLower'] = tab1['countryLower'].apply(lambda x: "unitedstatesofamerica" if x == "unitedstates" else x)
+            #tab1[tab1['countryLower'].str.contains("unitedstates")]            
+            tab1['countryid'] = tab1['countryLower'].map(dictionarymap)            
             tab1['countryid'].astype('int')
+            tab1['countryid'] = tab1['countryid'].fillna(0)
 
             return tab1
         except Exception as inst:
@@ -201,11 +204,12 @@ class Teams:
             
             
             if show == 'web':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb","image"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb","filename_x","image"]
             elif show == 'local':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","image"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","filename_x","image"]
             else:    
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","FlagPathWeb","image"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals",
+                        "Current club","Country","FlagPath","filename_x","FlagPathWeb","image"]
             
             Showall = Showall[cols]
 
