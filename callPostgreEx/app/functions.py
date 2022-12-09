@@ -39,7 +39,7 @@ def image_base64(im):
 def image_formatter(im):
     return f'<img src="data:image/png;base64,{image_base64(im)}">'
     
-def getAllCountriesFlags(url, countriesdictmap, show='all'):
+def getAllCountriesFlags(url, countriesdictmap, replacingstrs, show='all'):
     
     try:
     
@@ -70,10 +70,12 @@ def getAllCountriesFlags(url, countriesdictmap, show='all'):
         ColumnNames = {"A":"Country",None:"FlagPath"}            
         tab1 = tab1.rename(columns=ColumnNames)        
         tab1['FlagPathWeb'] = tab1['FlagPath'].apply(lambda x: "{}{}".format('https://www.countries-ofthe-world.com/', x))
-        tab1['Country'] = tab1['Country'].str.replace('\W', '', regex=True)        
-        tab1['CountryLower'] = tab1['Country'].str.lower()
+        tab1['Country'] = tab1['Country'].str.lower()        
+        tab1['CountryClean'] = tab1['Country'].str.replace('\W', '', regex=True)
+        tab1['CountryClean'] = tab1['CountryClean'].replace(replacingstrs, regex=True)
+        
         #tab1['countryid'] = tab1['CountryLower'].map(natTeams.set_index('NationalTeamNameLower')['NationalTeamId'])
-        tab1['countryid'] = tab1['CountryLower'].map(countriesdictmap)
+        tab1['countryid'] = tab1['CountryClean'].map(countriesdictmap)
         tab1['countryid'] = tab1['countryid'].fillna(0)
         tab1['countryid'] = tab1['countryid'].astype(int)
         tab1 = tab1.set_index('countryid')
@@ -89,6 +91,47 @@ def getAllCountriesFlags(url, countriesdictmap, show='all'):
         
         tab1 = tab1[showcols]
 
+        return tab1
+    except:
+        return print("Error occured with the dataset.")
+    
+def getAllFIFACodes(url, countriesdictmap, classname, starttab, endtab, replacingstrs):
+    
+    try:
+    
+        data = []        
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, parser='lxml', features="lxml")
+        table = soup.find_all( "table", {"class":classname} )
+
+        for tabi in table[starttab:endtab]: 
+            table_body = tabi.find('tbody')
+
+            rows = table_body.find_all('tr')
+            for row in rows:
+                cols = row.find_all('td') 
+                cols = [ele.text.strip() for ele in cols]
+                datas1 = [ele for ele in cols]
+                data.append(datas1)
+
+        tab1 = pd.DataFrame(data)
+        tab1.columns = tab1.iloc[0]
+        tab1 = tab1[1:]  
+        cols = ["teamName","countryCode","dat2"]
+        tab1.columns = cols
+        columnstoshow = ["teamName","countryCode"]
+        tab1 = tab1.loc[:,columnstoshow]        
+        tab1 = tab1.dropna()  
+        tab1["teamNameClean"] = tab1["teamName"].str.lower()
+        tab1["teamNameClean"] = tab1["teamNameClean"].str.strip()        
+        tab1["teamNameClean"] = tab1["teamNameClean"].replace(replacingstrs, regex=True)
+        tab1["teamNameCleanAll"] = tab1["teamNameClean"].str.replace('\W', '', regex=True)
+        tab1["countryCode"] = tab1["countryCode"].str.partition('[')[0]
+        tab1['countryid'] = tab1['teamNameCleanAll'].map(countriesdictmap)
+        tab1['countryid'] = tab1['countryid'].fillna(0)
+        tab1['countryid'] = tab1['countryid'].astype(int)
+        tab1 = tab1.set_index('countryid') 
+        
         return tab1
     except:
         return print("Error occured with the dataset.")

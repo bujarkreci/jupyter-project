@@ -77,10 +77,10 @@ def connectWriteSQL():
 
 # for debug
 if __name__ == '__main__':
-    connection = connect()
+    #connection = connect()
     connectionSQL = connectSQL()
-    result = connection.execute("select version();")
+    result = connectionSQL.execute("SELECT @@VERSION;")
     for row in result:
         print(row)
-    connection.close()
+    #connection.close()
     connectionSQL.close()
