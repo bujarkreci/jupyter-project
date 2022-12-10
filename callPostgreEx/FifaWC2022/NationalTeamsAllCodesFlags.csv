@@ -73,7 +73,7 @@ countryid,teamName,countryCode,teamNameClean,teamNameCleanAll,FlagPath,FlagPathW
 51,Finland,FIN,finland,finland,flags-normal/flag-of-Finland.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Finland.png,flag-of-Finland.png
 52,France,FRA,france,france,flags-normal/flag-of-France.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-France.png,flag-of-France.png
 212,French Guiana,GUF,french guiana,frenchguiana,flags-normal/flag-of-French-Guiana.png,,flag-of-French-Guiana.png
-215,Fs Micronesia,FSM,,,flags-normal/flag-of-Micronesia.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Micronesia.png,flag-of-Micronesia.png
+215,Fs Micronesia,FSM,fs micronesia,fsmicronesia,flags-normal/flag-of-Micronesia.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Micronesia.png,flag-of-Micronesia.png
 124,Gabon,GAB,gabon,gabon,flags-normal/flag-of-Gabon.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Gabon.png,flag-of-Gabon.png
 141,Gambia,GAM,gambia,gambia,flags-normal/flag-of-Gambia.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Gambia.png,flag-of-Gambia.png
 80,Georgia,GEO,georgia,georgia,flags-normal/flag-of-Georgia.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Georgia.png,flag-of-Georgia.png
@@ -127,7 +127,7 @@ countryid,teamName,countryCode,teamNameClean,teamNameCleanAll,FlagPath,FlagPathW
 214,Martinique,MTQ,martinique,martinique,flags-normal/flag-of-Martinique.png,,flag-of-Martinique.png
 147,Mauritania,MTN,mauritania,mauritania,flags-normal/flag-of-Mauritania.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Mauritania.png,flag-of-Mauritania.png
 183,Mauritius,MRI,mauritius,mauritius,flags-normal/flag-of-Mauritius.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Mauritius.png,flag-of-Mauritius.png
-205,Mayotte,MYT,,,flags-normal/flag-of-Mayotte.png,,flag-of-Mayotte.png
+205,Mayotte,MYT,mayotte,mayotte,flags-normal/flag-of-Mayotte.png,,flag-of-Mayotte.png
 93,Mexico,MEX,mexico,mexico,flags-normal/flag-of-Mexico.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Mexico.png,flag-of-Mexico.png
 85,Moldova,MDA,moldova,moldova,flags-normal/flag-of-Moldova.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Moldova.png,flag-of-Moldova.png
 189,Mongolia,MNG,mongolia,mongolia,flags-normal/flag-of-Mongolia.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Mongolia.png,flag-of-Mongolia.png
@@ -150,7 +150,7 @@ countryid,teamName,countryCode,teamNameClean,teamNameCleanAll,FlagPath,FlagPathW
 61,Norway,NOR,norway,norway,flags-normal/flag-of-Norway.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Norway.png,flag-of-Norway.png
 27,Oman,OMA,oman,oman,flags-normal/flag-of-Oman.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Oman.png,flag-of-Oman.png
 165,Pakistan,PAK,pakistan,pakistan,flags-normal/flag-of-Pakistan.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Pakistan.png,flag-of-Pakistan.png
-225,Palau,PLW,,,flags-normal/flag-of-Palau.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Palau.png,flag-of-Palau.png
+225,Palau,PLW,palau,palau,flags-normal/flag-of-Palau.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Palau.png,flag-of-Palau.png
 185,Palestine,PLE,palestine,palestine,flags-normal/flag-of-Palestine.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Palestine.png,flag-of-Palestine.png
 103,Panama,PAN,panama,panama,flags-normal/flag-of-Panama.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Panama.png,flag-of-Panama.png
 156,Papua New Guinea,PNG,papua new guinea,papuanewguinea,flags-normal/flag-of-Papua-New-Guinea.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Papua-New-Guinea.png,flag-of-Papua-New-Guinea.png
@@ -199,7 +199,7 @@ countryid,teamName,countryCode,teamNameClean,teamNameCleanAll,FlagPath,FlagPathW
 41,Tajikistan,TJK,tajikistan,tajikistan,flags-normal/flag-of-Tajikistan.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Tajikistan.png,flag-of-Tajikistan.png
 138,Tanzania,TAN,tanzania,tanzania,flags-normal/flag-of-Tanzania.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Tanzania.png,flag-of-Tanzania.png
 33,Thailand,THA,thailand,thailand,flags-normal/flag-of-Thailand.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Thailand.png,flag-of-Thailand.png
-226,Tibet,TIB,,,flags-normal/flag-of-Tibet.png,,flag-of-Tibet.png
+226,Tibet,TIB,tibet,tibet,flags-normal/flag-of-Tibet.png,,flag-of-Tibet.png
 192,Timor-Leste,TLS,timor-leste,timorleste,flags-normal/flag-of-Timor-Leste.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Timor-Leste.png,flag-of-Timor-Leste.png
 115,Togo,TOG,togo,togo,flags-normal/flag-of-Togo.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Togo.png,flag-of-Togo.png
 153,Tonga,TGA,tonga,tonga,flags-normal/flag-of-Tonga.png,https://www.countries-ofthe-world.com/flags-normal/flag-of-Tonga.png,flag-of-Tonga.png

@@ -228,7 +228,7 @@ class Teams:
             tab1["teamid"] = self.teamid  
             tab1["countryLower"] = tab1['Country'].str.replace('\W', '', regex=True)
             tab1['countryLower'] = tab1['countryLower'].str.lower()
-            tab1['countryLower'] = tab1['countryLower'].apply(lambda x: "unitedstatesofamerica" if x == "unitedstates" else x)
+            #tab1['countryLower'] = tab1['countryLower'].apply(lambda x: "unitedstatesofamerica" if x == "unitedstates" else x)
             #tab1[tab1['countryLower'].str.contains("unitedstates")]            
             tab1['countryid'] = tab1['countryLower'].map(dictionarymap)            
             tab1['countryid'].astype('int')
@@ -243,16 +243,16 @@ class Teams:
             getteamset = self.getTeamsDetailsSoup(dictionarymap)
             getteamset = getteamset.set_index("countryid")
             Showall = getteamset.merge(joinflags, on='countryid', how='left')
-            Showall = Showall.set_index("Number")           
+            #Showall = Showall.set_index("Number")           
             
             
             if show == 'web':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb","filename_x","image"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPathWeb","Filename","image"]
             elif show == 'local':
-                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","filename_x","image"]
+                cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath","Filename","image"]
             else:    
                 cols = ["Position","Player name","Date of birth","Caps","Goals",
-                        "Current club","Country","FlagPath","filename_x","FlagPathWeb","image"]
+                        "Current club","Country","FlagPath","Filename","FlagPathWeb","image"]
             
             Showall = Showall[cols]
 

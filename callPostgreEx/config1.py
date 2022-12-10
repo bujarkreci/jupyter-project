@@ -42,8 +42,9 @@ class ConfigPostgreSQL(ConfigBase):
 class ConfigPostgreSQLAlchemy(ConfigBase):    
     par = 'postgresql://' + connPostgre['username'] + ':' + connPostgre['pwd'] + '@' + connPostgre['hostname'] + ':' + str(connPostgre['port_id']) + '/' + connPostgre['database']        
     
+    
 class ConfigSQLAlchemy(ConfigBase):
-    par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+17+for+SQL+Server"
+    par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
     
 #This ConfigSQLDirect is not working need further to investigate
 class ConfigSQLDirect(ConfigBase):
