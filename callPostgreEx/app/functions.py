@@ -121,9 +121,9 @@ def append_xls(fpath, l, df, sheet_name,flagpath):
         worksheet.insert_image(start_row+1, 9, ima, {'image_data': image_buffer, **data}) 
         worksheet.set_row(start_row+1, 25)
         start_row +=1
-    worksheet.save()
+    
     workbook.close()
-
+    
 def image_formatter(im):
     return f'<img src="data:image/png;base64,{image_base64(im)}">'
     
@@ -223,7 +223,91 @@ def getAllFIFACodes(url, countriesdictmap, classname, starttab, endtab, replacin
         return tab1
     except:
         return print("Error occured with the dataset.")
+    
+def append_xlsFull(fpath, wccountries, countrymapping, allteams):    
+    try:
+        cols = ["Position","Player name","Date of birth","Caps","Goals","Current club","Country","FlagPath"]
+        image_width = 204.0
+        image_height = 120.0
 
+        cell_width = 150.0
+        cell_height = 75.0
+
+        x_scale = cell_width/image_width
+        y_scale = cell_height/image_height         
+        data = {'x_scale': x_scale, 'y_scale': y_scale, 'object_position': 1}            
+        #workbook = xlsxwriter.Workbook(fpath)
+
+        team = []
+        numdata = len(wccountries)
+        for i in range(numdata):                
+            ti = Teams(i+1,wccountries.index[i],wccountries.iloc[i]["link"], 
+                      wccountries.iloc[i]["countryid"],wccountries.iloc[i]["FlagPath"])
+            team.append(ti)
+            
+        with pd.ExcelWriter(fpath, engine='xlsxwriter') as writer:  
+            workbook = writer.book
+            title_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size':25})
+            text_format = workbook.add_format({'align': 'left', 'bold': True})
+            text_formatdate = workbook.add_format({'align': 'left', 'bold': True, 'num_format':'yyyy-mm-dd'})
+            header_format = workbook.add_format({'align': 'left', 'fg_color': 'gray', 'bold': True})
+            for i in range(numdata):
+                t = team[i]
+                worksheet = workbook.add_worksheet(t.teamname)
+                writer.sheets[t.teamname] = worksheet
+                
+                #team.append(t)
+                dct = dict(t)
+                CompleteShow=t.getCompleteTeamDetails(countrymapping, allteams,'local')
+                CompleteShow = CompleteShow[cols]
+                sep = dct['team head']
+                sep = pd.DataFrame(sep)
+                sep['Team name'] = t.teamname
+                sep = sep.loc[:, sep.columns != 'teamid']
+                
+
+                
+                #writer.sheets[t.teamname] = worksheet
+                numpimg = np.array(CompleteShow["FlagPath"])
+                image_buffer, image = resize(t.flagpath, (image_width, image_height), format='PNG')
+                worksheet.insert_image(0, 0, t.flagpath, {'image_data': image_buffer, **data})
+                worksheet.set_column(0, 0, 25)
+                worksheet.set_row(0, 60)
+                worksheet.write_row(0, 1, [t.teamname], title_format)
+                worksheet.set_column(1, 1, 40)
+
+                for j, colu in enumerate(sep.columns, start=1):
+                    worksheet.write_row(j, 0, [colu], header_format)
+                    worksheet.write_row(j, 1, sep[colu], text_format)
+
+                start_row = 0
+                worksheet.set_column(9, 10)
+                CompleteShow = CompleteShow.loc[:,CompleteShow.columns != "FlagPath"]
+                worksheet.set_column(2, 2, 8)
+                worksheet.set_column(3, 3, 25)  
+                worksheet.set_column(4, 4, 15)
+                worksheet.set_column(5, 6, 6)
+                worksheet.set_column(7, 8, 25)
+                worksheet.write_row(start_row, 2, CompleteShow.columns, header_format)
+
+                for i, column in enumerate(CompleteShow.columns, start=2):
+                    if i == 4:
+                        worksheet.write_column(start_row+1, i, CompleteShow[column], text_formatdate)
+                    else:
+                        worksheet.write_column(start_row+1, i, CompleteShow[column], text_format)
+
+                worksheet.write_row(start_row, 9, ["Flag"], header_format)
+                for ima in numpimg:
+                    image_buffer, image = resize(ima, (82, 48), format='PNG')            
+                    worksheet.insert_image(start_row+1, 9, ima, {'image_data': image_buffer, **data}) 
+                    worksheet.set_row(start_row+1, 25)
+                    start_row +=1
+
+            workbook.close()
+                    
+    except Exception as inst: 
+        return print(inst)
+    
 class Teams:    
     
     def __init__(self, teamid, teamname, link, countryid, flagpath):
@@ -284,7 +368,8 @@ class Teams:
             data = []   
             page = requests.get(self.link)
             soup = BeautifulSoup(page.text, parser='lxml', features="lxml")            
-            table = soup.find( "table", {"class":"plainrowheaders"} )
+            #table = soup.find( "table", {"class":"plainrowheaders"} )
+            table = soup.find( "table", {"class":"sortable wikitable plainrowheaders"} )            
             if table.empty:
                 raise Exception("There is an empty dataset")
                 
@@ -349,7 +434,8 @@ class Teams:
 
             return Showall
         except:
-            return print("Error occured with this dataset.")
+            return print("Error occured with this dataset.")        
+    
         
     def getTeamsHead(self):
         """ Get teams """
