@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 from PIL import Image
 from io import BytesIO
 import base64
+from typing import Tuple
+import glob
+import xlsxwriter
+import io
 
 def extractDataset(docpath):
     try:
@@ -35,6 +39,90 @@ def image_base64(im):
     with BytesIO() as buffer:
         im.save(buffer, 'png')
         return base64.b64encode(buffer.getvalue()).decode()
+    
+def buffer_image(image: Image, format: str = 'PNG'):
+    # Store image in buffer, so we don't have to write it to disk.
+    buffer = io.BytesIO()
+    image.save(buffer, format=format)
+    return buffer, image
+
+def resize(path: str, size: Tuple[int, int], format='PNG'):
+    image = Image.open(path)
+    image = image.resize(size)
+    return buffer_image(image, format)
+
+def rotate(image: Image, rotation: int = 90, format='JPEG'):
+    image = image.rotate(rotation, Image.NEAREST, expand=1)
+    return buffer_image(image, format)
+
+def create_header(worksheet: xlsxwriter.workbook.Worksheet):
+    bold = workbook.add_format({'bold': True})
+    worksheet.write('A1', 'Image Name', bold)
+    worksheet.write('B1', "Resized Image", bold)
+    worksheet.write('C1', "Rotated Image", bold)
+    worksheet.write('D1', "Metadata", bold)
+    return worksheet
+
+def append_xls(fpath, l, df, sheet_name,flagpath):
+    image_width = 204.0
+    image_height = 120.0
+    
+    cell_width = 150.0
+    cell_height = 75.0
+
+    x_scale = cell_width/image_width
+    y_scale = cell_height/image_height    
+       
+    workbook = xlsxwriter.Workbook(fpath)
+    worksheet = workbook.add_worksheet(sheet_name)
+    numpimg = np.array(df["FlagPath"])
+    title_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size':25})
+    text_format = workbook.add_format({'align': 'left', 'bold': True})
+    text_formatdate = workbook.add_format({'align': 'left', 'bold': True, 'num_format':'yyyy-mm-dd'})
+    header_format = workbook.add_format({'align': 'left', 'fg_color': 'gray', 'bold': True})
+    image_buffer, image = resize(flagpath, (image_width, image_height), format='PNG')
+    data = {'x_scale': x_scale, 'y_scale': y_scale, 'object_position': 1}
+    worksheet.insert_image(0, 0, flagpath, {'image_data': image_buffer, **data})
+    #worksheet.insert_image(0, 0, flagpath, {'image_data': image_buffer})
+    worksheet.set_column(0, 0, 25)
+    worksheet.set_row(0, 60)
+    worksheet.write_row(0, 1, [sheet_name], title_format)
+    worksheet.set_column(1, 1, 40)
+    
+    #worksheet.write_row(1, 0, ["Confederation"], header_format)
+    #worksheet.write_row(1, 1, l["Confederation"], header_format)
+    for i, colu in enumerate(l.columns, start=1):
+        worksheet.write_row(i, 0, [colu], header_format)
+        worksheet.write_row(i, 1, l[colu], text_format)
+    
+    start_row = 0
+    worksheet.set_column(9, 10)
+    df = df.loc[:,df.columns != "FlagPath"]
+    worksheet.set_column(2, 2, 8)
+    worksheet.set_column(3, 3, 25)  
+    worksheet.set_column(4, 4, 15)
+    worksheet.set_column(5, 6, 6)
+    worksheet.set_column(7, 8, 25)
+    worksheet.write_row(start_row, 2, df.columns, header_format)   
+    
+    
+    #start_row = 0
+    for i, column in enumerate(df.columns, start=2):
+        if i == 4:
+            worksheet.write_column(start_row+1, i, df[column], text_formatdate)
+        else:
+            worksheet.write_column(start_row+1, i, df[column], text_format)    
+    
+    
+    worksheet.write_row(start_row, 9, ["Flag"], header_format)
+    for ima in numpimg:
+        image_buffer, image = resize(ima, (82, 48), format='PNG')
+        data = {'x_scale': x_scale, 'y_scale': y_scale, 'object_position': 1}
+        worksheet.insert_image(start_row+1, 9, ima, {'image_data': image_buffer, **data}) 
+        worksheet.set_row(start_row+1, 25)
+        start_row +=1
+    worksheet.save()
+    workbook.close()
 
 def image_formatter(im):
     return f'<img src="data:image/png;base64,{image_base64(im)}">'
@@ -138,10 +226,12 @@ def getAllFIFACodes(url, countriesdictmap, classname, starttab, endtab, replacin
 
 class Teams:    
     
-    def __init__(self, teamid, teamname, link):
+    def __init__(self, teamid, teamname, link, countryid, flagpath):
         self.teamid = teamid
         self.teamname = teamname
-        self.link = link          
+        self.link = link
+        self.countryid = countryid
+        self.flagpath = flagpath
         
     def __str__(self):
         return dict(self)
@@ -151,8 +241,9 @@ class Teams:
     
     def __iter__(self):
         yield from {
-            "team id": self.teamid,
+            "team id": self.countryid,
             "team name": self.teamname,
+            "team flag": self.flagpath,
             "team head": self.getTeamsHeadSoup()
         }.items()  
 
@@ -181,7 +272,7 @@ class Teams:
             datas = ["Head coach","FIFA code","Confederation","Captain"]
             dat = tab1.loc[(tab1["ind"].isin(datas))]  
             res = dat.set_index("ind").T
-            res["teamid"] = self.teamid
+            res["teamid"] = self.countryid
             res = res.to_dict(orient="records")
             return res
         except:
@@ -225,7 +316,7 @@ class Teams:
             tab1 = tab1.astype(dtypescols)
             tab1.index = np.arange(1, len(tab1) + 1)
             tab1.index.name = "playerid"
-            tab1["teamid"] = self.teamid  
+            tab1["teamid"] = self.countryid  
             tab1["countryLower"] = tab1['Country'].str.replace('\W', '', regex=True)
             tab1['countryLower'] = tab1['countryLower'].str.lower()
             #tab1['countryLower'] = tab1['countryLower'].apply(lambda x: "unitedstatesofamerica" if x == "unitedstates" else x)
@@ -308,7 +399,7 @@ class Teams:
             tab1 = tab1.astype(dtypescols)
             tab1.index = np.arange(1, len(tab1) + 1)
             tab1.index.name = "playerid"
-            tab1["teamid"] = self.teamid
+            tab1["teamid"] = self.countryid
 
             return tab1
         except Exception as inst:
