@@ -52,8 +52,6 @@ class ConfigPostgreSQLAlchemy(ConfigBase):
 #connSqlServer = pyodbc.connect('DRIVER={SQL Server Native Client 10.0};SERVER=192.106.0.102,1443;DATABASE=master;UID=sql2008;PWD=password123')    
 class ConfigSQLnewestODBC(ConfigBase):
     par = 'mssql+pyodbc://{user}:{passwd}@{host}:{port}/{db}?driver=SQL+Server'.format(user=connSQL['uname'], passwd=connSQL['passw'], host=connSQL['server'], port=connSQL['port'], db=connSQL['dbu'])
-    #par = f"DRIVER={SQL Server Native Client 10.0};SERVER={connSQL['serverwithport']};DATABASE={connSQL['dbu']};UID={connSQL['uname']};PWD={connSQL['passw']}"
-    #par = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={connSQL['serverwithport']};DATABASE={connSQL['dbu']};UID={connSQL['uname']};PWD={connSQL['passw']}'
 
 class ConfigSQLAlchemy(ConfigBase):
     par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
