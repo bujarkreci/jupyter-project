@@ -1,12 +1,20 @@
 from decouple import config
-import psycopg2 as pg
-import pyodbc as pyo
+from dotenv import load_dotenv
+#import psycopg2 as pg
+import pyodbc
+import os
 
-secretKey = config("SECRET_KEY")
+load_dotenv()
+
+#secretKey = config("SECRET_KEY")
 unamePostgre = config("PostgreUser")
 passwPostgre = config("PostgrePass")
-unameSQL = config("SQLUser")
-passwSQL = config("SQLPass")
+
+secretKey = os.environ.get('SECRET_KEY')
+unameSQL = os.environ.get('SQLUser')
+passwSQL = os.environ.get('SQLPass')
+#unameSQL = config("SQLUser")
+#passwSQL = config("SQLPass")
 
 connPostgre = {
     'hostname' : '192.168.0.30',
@@ -19,10 +27,10 @@ connPostgre = {
 connSQL = {
     'server' : '192.168.0.30', 
     'serverwithport' : '192.168.0.30,49172',
-    'dbu' : 'FootballDetails', 
+    'dbu' : 'NBAGame', 
     'uname' : unameSQL, 
     'passw' : passwSQL,
-    'port' : 49172
+    'port' : '49172'
     }
 
 
@@ -38,11 +46,15 @@ class ConfigPostgreSQL(ConfigBase):
         "password" : connPostgre['pwd'],
         "port" : connPostgre['port_id']
     }
-    
+#url = 'mssql+pyodbc://{user}:{passwd}@{host}:{port}/{db}?driver=SQL+Server'.format(user=username, passwd=password, host=host, port=port, db=database)    
 class ConfigPostgreSQLAlchemy(ConfigBase):    
     par = 'postgresql://' + connPostgre['username'] + ':' + connPostgre['pwd'] + '@' + connPostgre['hostname'] + ':' + str(connPostgre['port_id']) + '/' + connPostgre['database']        
-    
-    
+#connSqlServer = pyodbc.connect('DRIVER={SQL Server Native Client 10.0};SERVER=192.106.0.102,1443;DATABASE=master;UID=sql2008;PWD=password123')    
+class ConfigSQLnewestODBC(ConfigBase):
+    par = 'mssql+pyodbc://{user}:{passwd}@{host}:{port}/{db}?driver=SQL+Server'.format(user=connSQL['uname'], passwd=connSQL['passw'], host=connSQL['server'], port=connSQL['port'], db=connSQL['dbu'])
+    #par = f"DRIVER={SQL Server Native Client 10.0};SERVER={connSQL['serverwithport']};DATABASE={connSQL['dbu']};UID={connSQL['uname']};PWD={connSQL['passw']}"
+    #par = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={connSQL['serverwithport']};DATABASE={connSQL['dbu']};UID={connSQL['uname']};PWD={connSQL['passw']}'
+
 class ConfigSQLAlchemy(ConfigBase):
     par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
     
@@ -58,5 +70,6 @@ config = {
     'PostgreSQL': ConfigPostgreSQL.conn,
     'PostgreSQLalchemy' : ConfigPostgreSQLAlchemy.par,
     'SQLAlchemy' : ConfigSQLAlchemy.par,
-    'SQLDirect' : ConfigSQLDirect.cnxn
+    'SQLDirect' : ConfigSQLDirect.cnxn,
+    'SQLveryodbcdbc' : ConfigSQLnewestODBC.par
 }
