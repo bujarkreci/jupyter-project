@@ -54,15 +54,11 @@ class ConfigSQLnewestODBC(ConfigBase):
     par = 'mssql+pyodbc://{user}:{passwd}@{host}:{port}/{db}?driver=SQL+Server'.format(user=connSQL['uname'], passwd=connSQL['passw'], host=connSQL['server'], port=connSQL['port'], db=connSQL['dbu'])
 
 class ConfigSQLAlchemy(ConfigBase):
-    par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+    par = "mssql+pyodbc://" + connSQL['uname'] + ":" + connSQL['passw'] + "@" + connSQL['server'] + ":" + str(connSQL['port']) + "/" + connSQL['dbu'] + "?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
     
 #This ConfigSQLDirect is not working need further to investigate
 class ConfigSQLDirect(ConfigBase):
-    cnxn = ("Driver={SQL Server Native Client 11.0};"
-            f"Server={connSQL['serverwithport']};"
-            f"Database={connSQL['dbu']};"
-            f"UID={connSQL['uname']};"
-            f"PWD={connSQL['passw']};")
+    cnxn = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={connSQL['serverwithport']};DATABASE={connSQL['dbu']};UID={connSQL['uname']};PWD={connSQL['passw']}"
 
 config = {    
     'PostgreSQL': ConfigPostgreSQL.conn,

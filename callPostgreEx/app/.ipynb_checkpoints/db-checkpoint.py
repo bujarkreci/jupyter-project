@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from app import cfi3, cfi4
+from app import cfi2, cfi3, cfi4
 import pyodbc
 #import pyodbc as pyo
 
@@ -15,6 +15,24 @@ def connectSQL():
         engine = create_engine(con)       
         
         connection = engine.connect()
+
+        return connection
+    except:
+        return print("Connection failed.")
+
+def connectSQLDirect():
+    """ Connect to the SQL database server """
+
+    try:
+        # read connection params
+        con = cfi3       
+
+        # connect to PostgreSQL server
+        print('Connecting SQL...')
+        #engine = create_engine(con)      
+        conn = pyodbc.connect(con) 
+        
+        connection = conn
 
         return connection
     except:
@@ -82,7 +100,7 @@ def connectWrite():
         print('Connecting...')
         engine = create_engine(con)       
         
-
+        
         autocommit_engine = engine.execution_options(isolation_level="AUTOCOMMIT")
 
         connection = autocommit_engine.connect()
@@ -96,13 +114,12 @@ def connectWriteSQL():
 
     try:
         # read connection params
-        con = cfi2        
+        con = cfi2
 
         # connect to PostgreSQL server
         print('Connecting SQL...')
         engine = create_engine(con)     
-        
-        
+
         autocommit_engine = engine.execution_options(isolation_level="AUTOCOMMIT")
 
         connection = autocommit_engine.connect()
@@ -111,10 +128,29 @@ def connectWriteSQL():
     except:
         return print("Connection failed.")
 
+def connectSQLnewRunAutocommit():
+    """ Connect to the SQL database server """
+
+    try:
+        # read connection params
+        con = cfi4       
+         
+        # connect to PostgreSQL server
+        print('Connecting SQL...')        
+        engine = create_engine(con)       
+        #conn = pyodbc.connect(con)
+        connection = engine.connect()
+        connection.autocommit = True
+        return connection
+    except:
+        return print("Connection failed.")
+
 # for debug
 if __name__ == '__main__':
     #connection = connect()
-    connectionSQL = connectSQLnewRun()
+    #connectionSQL = connectSQLnewRun()
+    #connectionSQL = connectSQLnewRunAutocommit()
+    connectionSQL = connectWriteSQL()
     result = connectionSQL.execute("SELECT @@VERSION;")
     for row in result:
         print(row)
